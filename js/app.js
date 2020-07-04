@@ -200,3 +200,198 @@ const printBarChart = (ctx, barCharData, title) => {
 		}
 	})
 }
+
+const printDoughnutChart = (ctx, title, data, labels, bgColors, borderColor) => {
+	let displayTitle = false;
+	if (title) {
+		displayTitle = true;
+	}
+	myChart = new Chart(ctx, {
+		type: 'doughnut',
+		data: {
+			labels,
+			datasets: [{
+				data,
+				backgroundColor: bgColors,
+				borderColor,
+				borderWidth: 1
+			}]//Fin del datasets
+		},
+		options: {
+			resposive: true,
+			title: {
+				display: displayTitle,
+				text: title
+			}
+		}//Fin de option
+	});//Fin de Chart
+}
+
+const updateCustomerSumary = () => {
+
+	//Se recuperan los graficos
+	const customerSumary = document.getElementById('customerSumary');
+	const delinquentCustomers = document.getElementById('delinquentCustomers');
+	const collectionDificulty = document.getElementById('collectionDificulty');
+	const cashFlowQuinquenal = document.getElementById('cashFlowQuinquenal');
+
+	//Se definen los colores
+	let bgBlue = 'rgba(54, 162, 235, 0.2)';
+	let borderBlue = 'rgba(54, 162, 235, 1)';
+
+	let bgRed = 'rgba(255, 99, 132, 0.2)';
+	let borderRed = 'rgba(255, 99, 132, 1)';
+
+	let bgGreen = 'rgba(46, 204, 113,0.2)';
+	let borderGreen = 'rgba(46, 204, 113,1)';
+
+	let bgYellow = 'rgba(241, 196, 15,0.2)';
+	let borderYellow = 'rgba(241, 196, 15,1.0)';
+
+	let bgOrange = 'rgba(211, 84, 0, 0.2)'
+	let borderOrange = 'rgba(211, 84, 0, 1)'
+
+	let bgColors = [
+		'rgba(54, 162, 235, 0.2)',
+		'rgba(255, 99, 132, 0.2)'
+	];
+
+	let borderColor = [
+		'rgba(54, 162, 235, 1)',
+		'rgba(255, 99, 132, 1)'
+	];
+
+	//Se recuperan las variables
+	let activeCustomers = 0;
+	let activeAmount = 0;
+
+	let inactiveCustomers = 0;
+
+	let delinquentCustomersCount = 0;
+	let delinquentAmount = 0;
+
+	let correctCustomers = 0;
+	let corretAmount = 0;
+
+	let easyCollect = 0;
+	let easyAmount = 0;
+
+	let moderateCollect = 0;
+	let moderateAmount = 0;
+
+	let dificultCollect = 0;
+	let dificultAmount = 0;
+
+	let veryDificultColllect = 0;
+	let veryDificultAmount = 0;
+
+	customers.forEach(customer => {
+		if (customer.inactive) {
+			inactiveCustomers++;
+		} else {
+			activeCustomers++;
+			activeAmount += customer.balance;
+			if (customer.deliquentBalance) {
+				delinquentCustomersCount++;
+				delinquentAmount += customer.balance;
+			} else {
+				correctCustomers++;
+				corretAmount += customer.balance;
+			}
+
+			if (customer.paymentFrecuency < 30) {
+				easyCollect++;
+				easyAmount += customer.balance;
+			} else if (customer.paymentFrecuency < 60) {
+				moderateCollect++;
+				moderateAmount += customer.balance;
+			} else if (customer.paymentFrecuency < 90) {
+				dificultCollect++;
+				dificultAmount += customer.balance;
+			} else {
+				veryDificultColllect++;
+				veryDificultAmount += customer.balance;
+			}
+		}
+	})//Fin de forEach
+
+	//Se actualizan las graficas
+	printDoughnutChart(customerSumary, '', [activeCustomers, inactiveCustomers], ['Activos', 'Inactivos'], bgColors, borderColor);
+
+	printDoughnutChart(delinquentCustomers, '', [correctCustomers, delinquentCustomersCount], ['Al día', 'Morosos'], [bgGreen, bgRed], [borderGreen, borderRed]);
+
+	printDoughnutChart(collectionDificulty, '', [easyCollect, moderateCollect, dificultCollect, veryDificultColllect], ['Facil', 'Moderado', 'Dificil', 'Muy dificil'], [bgGreen, bgYellow, bgOrange, bgRed], [borderGreen, borderYellow, borderOrange, borderRed]);
+
+
+	//Ahora se actualiza el diagrama de barras
+	let reportLength = reports.length;
+	let labels = [];
+	let credits = [];
+	let payments = [];
+
+	let lastReports = [reports[reportLength - 4], reports[reportLength - 3], reports[reportLength - 2], reports[reportLength - 1]];
+
+	lastReports.forEach(r => {
+		let until = moment(r.until, 'YYYY-M-DD').subtract(1, 'days');
+		let label = `${until.format('MMMM DD')}`;
+
+		labels.push(label);
+		credits.push(r.creditAmount);
+		payments.push(r.paymentAmount);
+	})
+
+
+	let barCharData = {
+		labels,
+		datasets: [{
+			label: 'Abonos',
+			backgroundColor: 'rgba(54, 162, 235, 0.2)',
+			borderColor: 'rgba(54, 162, 235, 1)',
+			borderWidth: 1,
+			data: payments
+		}, {
+			label: 'Creditos',
+			backgroundColor: 'rgba(255, 99, 132, 0.2)',
+			borderColor: 'rgba(255, 99, 132, 1)',
+			borderWidth: 1,
+			data: credits
+		}]
+	}
+
+	printBarChart(cashFlowQuinquenal, barCharData);
+
+	//Se actualizan las leyendas de las graficas 
+	let activePercentage = customers.length > 0
+		? Math.floor((activeCustomers / customers.length) * 100)
+		: 0;
+
+	let deliquentPercentage = activeCustomers > 0
+		? Math.floor((delinquentCustomersCount / activeCustomers) * 100)
+		: 0;
+
+	let correctPercentage = activeCustomers > 0
+		? Math.floor((correctCustomers / activeCustomers) * 100)
+		: 0;
+
+	let easyPercentage = activeCustomers > 0
+		? Math.floor((easyCollect / activeCustomers) * 100)
+		: 0;
+
+	let moderatePercentage = activeCustomers > 0
+		? Math.floor((moderateCollect / activeCustomers) * 100)
+		: 0;
+
+	let dificultPercentage = activeCustomers > 0
+		? Math.floor((dificultCollect / activeCustomers) * 100)
+		: 0;
+
+	let veryDificultPercentage = activeCustomers > 0
+		? Math.floor((veryDificultColllect / activeCustomers) * 100)
+		: 0;
+
+	document.getElementById('customerSumaryInfo').innerHTML = `El <span class="history__card__bold">${activePercentage}%</span> de los clientes del sistema se encuentran activos con un saldo deudor que asciende a <span class="history__card__bold">${formatCurrencyLite(activeAmount, 0)}</span>`;
+
+	document.getElementById('delinquentCustomersInfo').innerHTML = `El <span class="history__card__bold">${correctPercentage}%</span> de los clientes activos se encuentran al día con un saldo pendiente total de <span class="history__card__bold">${formatCurrencyLite(corretAmount, 0)}</span>; mientras que el <span class="history__card__bold">${deliquentPercentage}%</span> presentan un saldo en mora de <span class="history__card__bold">${formatCurrencyLite(delinquentAmount, 0)}</span>`;
+
+	document.getElementById('collectionDificultyInfo').innerHTML = `El <span class="history__card__bold">${easyPercentage}% (${formatCurrencyLite(easyAmount, 0)})</span> presentan una frecuencia de pago menor a 30 días;<br>El <span class="history__card__bold">${moderatePercentage}% (${formatCurrencyLite(moderateAmount, 0)})</span> presenta una frecuencia de pago entre 30 y 60 días;<br>El <span class="history__card__bold">${dificultPercentage}% (${formatCurrencyLite(dificultAmount, 0)})</span> presentan una frecuencia de pago entre 60 y 90 día.<br>El <span class="history__card__bold">${veryDificultPercentage}% (${formatCurrencyLite(veryDificultAmount, 0)})</span> presentan una frecuencia de pago superior a 90 días.`;
+}//Fin del metodo

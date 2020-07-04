@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Son de cuatro</title>
+    <!-- Fuentes tipograficas Poppins and Open Sands-->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Poppins:wght@400;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Normalize -->
+    <link rel="stylesheet" href="../css/normalize.css" />
+
+    <!-- Mis estilos -->
+    <link rel="stylesheet" href="../css/style.css" />
+  </head>
+  <body>
+		<div class="container">
+			<h1 class="title">Informe financiero</h1>
+
+			<div class="card p-b">
+        <h2 class="card__title">Capital Social</h2>
+        <canvas class="card__chart" id="socialCapital"></canvas>
+        <div class="card__info">
+          <p>
+            En este grafico se muestra el valor de los aportes en efectivo y la
+            recuperación de capital ya sea en mercancías o en efectivo.
+          </p>
+          <p>
+            Lo que deja unos saldos pendientes: Andrés
+            <span class="text-bold">$104.100</span> y Edith
+            <span class="text-bold">$137.500</span>
+          </p>
+        </div>
+			</div>
+			
+			<div class="card p-b">
+        <h2 class="card__title">Deudas</h2>
+        <canvas class="card__chart" id="debts"></canvas>
+        <div class="card__info">
+          <p>
+            En este grafico se muestra el valor de los aportes en efectivo y la
+            recuperación de capital ya sea en mercancías o en efectivo.
+          </p>
+          <p>
+            Lo que deja unos saldos pendientes: Andrés
+            <span class="text-bold">$104.100</span> y Edith
+            <span class="text-bold">$137.500</span>
+          </p>
+        </div>
+			</div>
+			
+			<div class="card p-b">
+        <h2 class="card__title">Cuentas por cobrar</h2>
+        <canvas class="card__chart" id="acountsReceivable"></canvas>
+        <div class="card__info">
+          <p>
+            En este grafico se muestra el valor de los aportes en efectivo y la
+            recuperación de capital ya sea en mercancías o en efectivo.
+          </p>
+          <p>
+            Lo que deja unos saldos pendientes: Andrés
+            <span class="text-bold">$104.100</span> y Edith
+            <span class="text-bold">$137.500</span>
+          </p>
+        </div>
+			</div>
+
+		</div>
+
+    <!-- Chartjs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+  </body>
+</html>
